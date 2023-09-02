@@ -4,6 +4,9 @@ int ControlPin = 3;   //give your arduino pin a name
 bool rocking = LOW;
 int switchState = LOW;
 int DutyCyclePercent = 58;
+int timerCount = 0;
+long timerEnd = 1500000;
+bool once = LOW;
 
 void setup() {
   
@@ -14,23 +17,36 @@ void setup() {
 }
 
 void loop() { 
-  
+  timerCount++;
+  if (timerCount < timerEnd){
+      Serial.println(timerCount);
+  }
+
   switchState = digitalRead(2);
 
   if (switchState == HIGH) {
+    timerCount = 0;
     Serial.print("Duty cycle percent: ");
     Serial.println(DutyCyclePercent);
     digitalWrite(ControlPin, HIGH);
     delay(340);
-    analogWrite(ControlPin, int(DutyCyclePercent*255/100));
     rocking = !rocking;
+  }
+  
+  if (timerCount > timerEnd){
+    rocking = LOW;
+    if (once == false){
+      once = true;
+      Serial.print(millis());
+    }
+  }
+
+  if (rocking == HIGH) {
+    analogWrite(ControlPin, int(DutyCyclePercent*255/100));
   }
   
   if (rocking == LOW) {
     digitalWrite(ControlPin, LOW);
   }
-
-// this seems good
-  // Serial.println(int(DutyCyclePercent*255/100));
 
 }
