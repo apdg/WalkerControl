@@ -3,7 +3,7 @@
 int ControlPin = 3;   //give your arduino pin a name
 bool rocking = LOW;
 int switchState = LOW;
-int DutyCyclePercent = 56;
+int DutyCyclePercent = 58;
 
 void setup() {
   
