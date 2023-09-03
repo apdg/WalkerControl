@@ -7,7 +7,7 @@ int DutyCyclePercent = 58;
 int timerCount = 0;
 long timerEnd = 1500000;
 bool once = LOW;
-
+// instead of this, just check millis when the button is pressed and stop when that + desired time is reached
 void setup() {
   
   pinMode(ControlPin, OUTPUT); // initialize the digital pin as an output.
