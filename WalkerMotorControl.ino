@@ -4,10 +4,9 @@ int ControlPin = 3;   //give your arduino pin a name
 bool rocking = LOW;
 int switchState = LOW;
 int DutyCyclePercent = 58;
-int timerCount = 0;
-long timerEnd = 1500000;
-bool once = LOW;
-// instead of this, just check millis when the button is pressed and stop when that + desired time is reached
+int timerStart = 0;
+float runHours = 2.5
+long timerEnd = int(runHours*60*60*1000);
 void setup() {
   
   pinMode(ControlPin, OUTPUT); // initialize the digital pin as an output.
@@ -17,15 +16,12 @@ void setup() {
 }
 
 void loop() { 
-  timerCount++;
-  if (timerCount < timerEnd){
-      Serial.println(timerCount);
-  }
 
   switchState = digitalRead(2);
 
   if (switchState == HIGH) {
-    timerCount = 0;
+    timerStart = millis();
+    Serial.print(timerStart);
     Serial.print("Duty cycle percent: ");
     Serial.println(DutyCyclePercent);
     digitalWrite(ControlPin, HIGH);
@@ -33,12 +29,8 @@ void loop() {
     rocking = !rocking;
   }
   
-  if (timerCount > timerEnd){
+  if (millis()-timerStart > timerEnd){
     rocking = LOW;
-    if (once == false){
-      once = true;
-      Serial.print(millis());
-    }
   }
 
   if (rocking == HIGH) {
