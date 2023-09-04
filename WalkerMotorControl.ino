@@ -3,13 +3,15 @@
 int ControlPin = 3;   //give your arduino pin a name
 bool rocking = LOW;
 int switchState = LOW;
-int DutyCyclePercent = 58;
-int timerStart = 0;
+int DutyCyclePercent = 60;
+long timerStart = 0;
 
 int targetKilometers = 10;
 int estimatedMinutesPerKM = 12;
 int bufferTimeMin = 15;
-long timerEnd = 9000000;
+long timerDuration = 4600000;
+//red: 9m@58 = 6.4km -> 0.71m/s, 7m@57 = 4.7km -> 0.67m/s
+//black: 0.7m@58 = 0.7km -> 1m/s, 2.1m@59 = 2.24km -> 1.07m/s, 4.6m@60 = 
 
 void setup() {
   
@@ -28,7 +30,7 @@ void loop() {
     Serial.println(timerStart);
     Serial.println(targetKilometers);
     Serial.println(estimatedMinutesPerKM);
-    Serial.println(timerEnd);
+    Serial.println(timerDuration);
     Serial.print("Duty cycle percent: ");
     Serial.println(DutyCyclePercent);
     digitalWrite(ControlPin, HIGH);
@@ -36,7 +38,7 @@ void loop() {
     rocking = !rocking;
   }
   
-  if (millis()-timerStart > timerEnd){
+  if (millis()-timerStart > timerDuration){
     rocking = LOW;
   }
 
