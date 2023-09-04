@@ -5,8 +5,12 @@ bool rocking = LOW;
 int switchState = LOW;
 int DutyCyclePercent = 58;
 int timerStart = 0;
-float runHours = 2.5
-long timerEnd = int(runHours*60*60*1000);
+
+int targetKilometers = 10;
+int estimatedMinutesPerKM = 12;
+int bufferTimeMin = 15;
+long timerEnd = 9000000;
+
 void setup() {
   
   pinMode(ControlPin, OUTPUT); // initialize the digital pin as an output.
@@ -21,7 +25,10 @@ void loop() {
 
   if (switchState == HIGH) {
     timerStart = millis();
-    Serial.print(timerStart);
+    Serial.println(timerStart);
+    Serial.println(targetKilometers);
+    Serial.println(estimatedMinutesPerKM);
+    Serial.println(timerEnd);
     Serial.print("Duty cycle percent: ");
     Serial.println(DutyCyclePercent);
     digitalWrite(ControlPin, HIGH);
