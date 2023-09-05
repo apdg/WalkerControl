@@ -9,10 +9,10 @@ long timerStart = 0;
 int targetKilometers = 10;
 int estimatedMinutesPerKM = 12;
 int bufferTimeMin = 15;
-long timerDuration = 3900000;
+long timerDuration = 1700000;
 //red: 9m@58 = 6.4km -> 0.71m/s, 7m@57 = 4.7km -> 0.67m/s
 //black: 0.7m@58 = 0.7km -> 1m/s, 2.1m@59 = 2.24km -> 1.07m/s, 4039589@60 = 4.1k -> 1.01m/s, 4.9m@60 = 5.17km -> 1.055m/s
-// 690sec@66 = 700m -> 1.014m/s, 3.9m@66 = 4.73km -> 1.21m/s
+// 690sec@66 = 700m -> 1.014m/s, 3.9m@66 = 4.73km -> 1.21m/s, 1.7m@66 = 1.23km
 
 void setup() {
   
