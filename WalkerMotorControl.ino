@@ -3,8 +3,10 @@
 int ControlPin = 3;   //give your arduino pin a name
 bool rocking = LOW;
 int switchState = LOW;
-int DutyCyclePercent = 65;
+int DutyCyclePercent = 82;
 long timerStart = 0;
+bool speedChange = LOW;
+bool bedtimeDelay = LOW;
 
 int targetKilometers = 10;
 int estimatedMinutesPerKM = 12;
@@ -19,7 +21,7 @@ void setup() {
   pinMode(ControlPin, OUTPUT); // initialize the digital pin as an output.
   pinMode(2, INPUT);
 
-  Serial.begin(11520);          //setup the serial monitor for viewing the active PWM control value
+  Serial.begin(9600);          //setup the serial monitor for viewing the active PWM control value
 }
 
 void readouts() {
@@ -44,32 +46,46 @@ void readouts() {
 
 }
 
+void DelayStart() {
+    Serial.println("Two hour delay started.");
+    delay(7200000);
+    Serial.println("Two hour delay ended.");
+}
+
 void loop() { 
 
   switchState = digitalRead(2);
 
   if (switchState == HIGH) {
-    Serial.println("Two hour delay started.");
-    delay(7200000);
-    Serial.println("Two hour delay ended.");
+    if (bedtimeDelay){
+      DelayStart();
+    }
+    else{
+      Serial.println("Start delay off.");
+    }
     timerStart = millis();
     Serial.println("Run timer of " + String(timerDuration/1000) + " seconds started.");
     digitalWrite(ControlPin, HIGH);
     delay(340);
     rocking = !rocking;
-    // readouts();
+    speedChange = HIGH;
+    //readouts();
   }
   
   if (millis()-timerStart > timerDuration){
+    Serial.println("Run timer ended.");
     rocking = LOW;
+    speedChange = HIGH;
   }
 
-  if (rocking == HIGH) {
+  if (rocking == HIGH && speedChange == HIGH) {
     analogWrite(ControlPin, int(DutyCyclePercent*255/100));
+    speedChange = LOW;
   }
   
-  if (rocking == LOW) {
+  if (rocking == LOW && speedChange == HIGH) {
     digitalWrite(ControlPin, LOW);
+    speedChange = LOW;
   }
 
 }
