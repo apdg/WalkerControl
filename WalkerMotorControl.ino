@@ -7,6 +7,7 @@ int DutyCyclePercent = 82;
 long timerStart = 0;
 bool speedChange = LOW;
 bool bedtimeDelay = LOW;
+int seconds = 0;
 
 int targetKilometers = 10;
 int estimatedMinutesPerKM = 12;
@@ -53,7 +54,14 @@ void DelayStart() {
 }
 
 void loop() { 
+  seconds = millis()/1000;
 
+  if (seconds % 2 == 0){
+    digitalWrite(13, HIGH);
+  }
+  else{
+    digitalWrite(13, LOW);
+  }
   switchState = digitalRead(2);
 
   if (switchState == HIGH) {
