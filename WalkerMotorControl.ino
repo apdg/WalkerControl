@@ -6,8 +6,9 @@ int switchState = LOW;
 int DutyCyclePercent = 82;
 long timerStart = 0;
 bool speedChange = LOW;
-bool bedtimeDelay = LOW;
-int timeCheck = 0;
+float bedtimeDelayHrs = .01;
+long timerElapsed = 0;
+bool previousSwitchState = LOW;
 
 int targetKilometers = 10;
 int estimatedMinutesPerKM = 12;
@@ -30,28 +31,38 @@ void readouts() {
     Serial.print("Timer Checkpoint: ");
     Serial.println(timerStart);
 
-    // Serial.println(targetKilometers);
-    // Serial.println(estimatedMinutesPerKM);
 
     if (rocking) {
-      Serial.print("Rocking started. Duty cycle: ");
-      Serial.print(DutyCyclePercent);
-      Serial.println("%");
-
-      Serial.print("Timer Delta Setting: ");
-      Serial.print(timerDuration/1000);
-      Serial.println(" seconds.\n");
+      Serial.println("Rocking started.");
+      Serial.println("Duty cycle: " + String(DutyCyclePercent) + "%");
+      Serial.println("Run timer: " + String(timerDuration/1000) + " seconds. \n");
     }
     if (!rocking) {
-      Serial.println("Rocking stopped.\n");
+      Serial.println("Rocking stopped after " + String(timerElapsed/1000) + " seconds. \n");
     }
 
 }
 
 void DelayStart() {
-    Serial.println("Two hour delay started.");
-    delay(10000000);
-    Serial.println("Two hour delay ended.");
+    long del = bedtimeDelayHrs*60*60*1000;
+    Serial.println(String(bedtimeDelayHrs) + " hour delay started.");
+    delay(del);
+    Serial.println(String(bedtimeDelayHrs) + " hour delay ended.");
+}
+
+void Engage() {
+   if (bedtimeDelayHrs > 0){
+      DelayStart();
+    }
+    else{
+      Serial.println("Start delay off.");
+    }
+    timerStart = millis();
+    digitalWrite(ControlPin, HIGH);
+    delay(340);
+    rocking = !rocking;
+    speedChange = HIGH;
+    readouts();
 }
 
 void loop() { 
@@ -59,20 +70,13 @@ void loop() {
   switchState = digitalRead(2);
 
   if (switchState == HIGH) {
-    if (bedtimeDelay){
-      DelayStart();
+    if (rocking == LOW && speedChange == LOW) {
+      Engage();
     }
-    else{
-      Serial.println("Start delay off.");
+    else {
+      rocking = LOW;
+      speedChange = HIGH;
     }
-    timerStart = millis();
-    timeCheck = 0;
-    Serial.println("Run timer of " + String(timerDuration/1000) + " seconds started.");
-    digitalWrite(ControlPin, HIGH);
-    delay(340);
-    rocking = !rocking;
-    speedChange = HIGH;
-    //readouts();
   }
   
   if (millis()-timerStart > timerDuration && speedChange == LOW){
@@ -91,12 +95,12 @@ void loop() {
     speedChange = LOW;
   }
 
-  if (round((millis()-timerStart)/1000) % 2 == 0)
-  {
-    timeCheck++;
-    Serial.println("Timer (minutes): " + String(timeCheck));
+  timerElapsed = millis()-timerStart;
+  if (timerElapsed % 100000 == 0 && rocking){
+    Serial.println("Hundreds of seconds (0.1-0.12kms) since start: " + String(timerElapsed/100000));
+    delay(50);
   }
-  
+
 
 }
 
