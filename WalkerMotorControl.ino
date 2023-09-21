@@ -54,14 +54,7 @@ void DelayStart() {
 }
 
 void loop() { 
-  seconds = millis()/1000;
 
-  if (seconds % 2 == 0){
-    digitalWrite(13, HIGH);
-  }
-  else{
-    digitalWrite(13, LOW);
-  }
   switchState = digitalRead(2);
 
   if (switchState == HIGH) {
@@ -72,6 +65,7 @@ void loop() {
       Serial.println("Start delay off.");
     }
     timerStart = millis();
+    timeCheck = 0;
     Serial.println("Run timer of " + String(timerDuration/1000) + " seconds started.");
     digitalWrite(ControlPin, HIGH);
     delay(340);
