@@ -10,8 +10,8 @@ float bedtimeDelayHrs = 0;
 long timerElapsed = 0;
 bool prevSwitchState = LOW;
 
-int targetKilometers = 15;
-float estimatedMpS = 1.22;
+float targetKilometers = 4.9;
+float estimatedMpS = 1.1;
 long timerDuration = targetKilometers * 1000000 / estimatedMpS;
 //red: 9m@58 = 6.4km -> 0.71m/s, 7m@57 = 4.7km -> 0.67m/s
 //black: 0.7m@58 = 0.7km -> 1m/s, 2.1m@59 = 2.24km -> 1.07m/s, 4039589@60 = 4.1k -> 1.01m/s, 4.9m@60 = 5.17km -> 1.055m/s
@@ -34,7 +34,8 @@ void readouts() {
     if (rocking) {
       Serial.println("Rocking started.");
       Serial.println("Duty cycle: " + String(DutyCyclePercent) + "%");
-      Serial.println("Run timer: " + String(timerDuration/1000) + " seconds. \n");
+      // Serial.println("Run timer: " + String(timerDuration/1000) + " seconds.");
+      Serial.println("Timer will run for " + String(timerDuration/60000) + " minutes. \n");
     }
     if (!rocking) {
       Serial.println("Rocking stopped after " + String(timerElapsed/1000) + " seconds. \n");
@@ -81,11 +82,11 @@ void loop() {
   }
   prevSwitchState = switchState;
   
-  // if (millis()-timerStart > timerDuration && rocking == HIGH){
-  //   Serial.println("Run timer ended.");
-  //   rocking = LOW;
-  //   speedChange = HIGH;
-  // }
+  if (millis()-timerStart > timerDuration && rocking == HIGH){
+    Serial.println("Run timer ended.");
+    rocking = LOW;
+    speedChange = HIGH;
+  }
 
   if (rocking == HIGH && speedChange == HIGH) {
     analogWrite(ControlPin, int(DutyCyclePercent*255/100));
@@ -100,7 +101,7 @@ void loop() {
 
   timerElapsed = millis()-timerStart;
   if (timerElapsed % 100000 == 0 && rocking){
-    Serial.println("Hundreds of seconds (0.1-0.12kms) since start: " + String(timerElapsed/100000));
+    Serial.println(String(timerElapsed/100000) + " hundred seconds. \nRoughly " + String(timerElapsed/1000*estimatedMpS/1000) + " kilometers. \n");
     delay(50);
   }
 
