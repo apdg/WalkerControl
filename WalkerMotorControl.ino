@@ -6,14 +6,13 @@ int switchState = LOW;
 int DutyCyclePercent = 82;
 long timerStart = 0;
 bool speedChange = LOW;
-float bedtimeDelayHrs = .01;
+float bedtimeDelayHrs = 0;
 long timerElapsed = 0;
-bool previousSwitchState = LOW;
+bool prevSwitchState = LOW;
 
-int targetKilometers = 10;
-int estimatedMinutesPerKM = 12;
-int bufferTimeMin = 15;
-long timerDuration = 12000000;
+int targetKilometers = 15;
+float estimatedMpS = 1.22;
+long timerDuration = targetKilometers * 1000000 / estimatedMpS;
 //red: 9m@58 = 6.4km -> 0.71m/s, 7m@57 = 4.7km -> 0.67m/s
 //black: 0.7m@58 = 0.7km -> 1m/s, 2.1m@59 = 2.24km -> 1.07m/s, 4039589@60 = 4.1k -> 1.01m/s, 4.9m@60 = 5.17km -> 1.055m/s
 // 690sec@66 = 700m -> 1.014m/s, 3.9m@66 = 4.73km -> 1.21m/s, 1.7m@66 = 1.23km, 12m@65 = 8.7km
@@ -69,21 +68,24 @@ void loop() {
 
   switchState = digitalRead(2);
 
-  if (switchState == HIGH) {
-    if (rocking == LOW && speedChange == LOW) {
-      Engage();
-    }
-    else {
-      rocking = LOW;
-      speedChange = HIGH;
-    }
+  if (switchState != prevSwitchState) {
+    if (switchState == HIGH) {
+        if (rocking == LOW && speedChange == LOW) {
+          Engage();
+        }
+        else {
+          rocking = LOW;
+          speedChange = HIGH;
+        }
+      }
   }
+  prevSwitchState = switchState;
   
-  if (millis()-timerStart > timerDuration && speedChange == LOW){
-    Serial.println("Run timer ended.");
-    rocking = LOW;
-    speedChange = HIGH;
-  }
+  // if (millis()-timerStart > timerDuration && rocking == HIGH){
+  //   Serial.println("Run timer ended.");
+  //   rocking = LOW;
+  //   speedChange = HIGH;
+  // }
 
   if (rocking == HIGH && speedChange == HIGH) {
     analogWrite(ControlPin, int(DutyCyclePercent*255/100));
@@ -93,6 +95,7 @@ void loop() {
   if (rocking == LOW && speedChange == HIGH) {
     digitalWrite(ControlPin, LOW);
     speedChange = LOW;
+    readouts();
   }
 
   timerElapsed = millis()-timerStart;
