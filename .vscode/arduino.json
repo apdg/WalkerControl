@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "/dev/tty.usbmodem14101",
+    "programmer": "avrisp",
+    "sketch": "WalkerMotorControl.ino",
+    "arduini.additionalUrls": "https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json"
+}
