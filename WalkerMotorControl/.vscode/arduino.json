@@ -1,0 +1,6 @@
+{
+    "board": "OSOYOO avr compatible boards:avr:Nano",
+    "port": "/dev/tty.usbserial-1410",
+    "programmer": "nulllab_lgtswd_asisp",
+    "sketch": "WalkerMotorControl.ino"
+}
