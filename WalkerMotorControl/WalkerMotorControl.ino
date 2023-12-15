@@ -12,14 +12,14 @@ int switchStateL = LOW;
 int switchStateR = LOW;
 bool prevSwitchStateL = LOW;
 bool prevSwitchStateR = LOW;
-int DutyCyclePercent = 64;
+int DutyCyclePercent = 65;
 long timerStart = 0;
 bool speedChange = LOW;
-float bedtimeDelayHrs = 1;
+float bedtimeDelayHrs = 0;
 long timerElapsed = 0;
 
 float targetKilometers = 69;
-float estimatedMpS = 1.15;
+float estimatedMpS = 1.19;
 long timerDuration = targetKilometers * 1000000 / estimatedMpS;
 
 void setup() {
