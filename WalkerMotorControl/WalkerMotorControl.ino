@@ -77,19 +77,7 @@ void Engage() {
     readouts();
 }
 
-void loop() { 
-  if (rocking) {
-    lcd.setCursor(0, 1);
-    lcd.print(String(((millis()-timerStart) / 1000)*estimatedMpS/1000) + "km");
-  }
-
-  switchStateL = digitalRead(ButtonPinLeft);
-  switchStateR = digitalRead(ButtonPinRight);
-
-  // Monitor Left Button
-  if (switchStateL != prevSwitchStateL) {
-    Serial.println("switch state LEFT changed");
-    if (switchStateL == HIGH) {
+void doLeftButton() {
         if (rocking == LOW && speedChange == LOW) {
           Engage();
         }
@@ -97,15 +85,11 @@ void loop() {
           rocking = LOW;
           speedChange = HIGH;
         }
-      }
-  }
-  prevSwitchStateL = switchStateL;
-  
-  // Monitor Right Button
-  if (switchStateR != prevSwitchStateR) {
-    Serial.println("switch state RIGHT changed");
-    String lcdString = "0.5";
-    if (switchStateR == HIGH) {
+}
+
+void doRightButton() {
+      String lcdString = "0.5";
+
       if (targetKilometers < 5)
       {
         targetKilometers = targetKilometers + 0.5;
@@ -134,6 +118,32 @@ void loop() {
       lcd.setCursor(0, 0);
       lcd.print("TARG:" + lcdString + "k @" + String(estimatedMpS) + "   ");
       timerDuration = targetKilometers * 1000000 / estimatedMpS;
+
+}
+
+void loop() { 
+  if (rocking) {
+    lcd.setCursor(0, 1);
+    lcd.print(String(((millis()-timerStart) / 1000)*estimatedMpS/1000) + "km");
+  }
+
+  switchStateL = digitalRead(ButtonPinLeft);
+  switchStateR = digitalRead(ButtonPinRight);
+
+  // Monitor Left Button
+  if (switchStateL != prevSwitchStateL) {
+    Serial.println("switch state LEFT changed");
+    if (switchStateL == HIGH) {
+      doLeftButton();
+      }
+  }
+  prevSwitchStateL = switchStateL;
+  
+  // Monitor Right Button
+  if (switchStateR != prevSwitchStateR) {
+    Serial.println("switch state RIGHT changed");
+    if (switchStateR == HIGH) {
+      doRightButton();
       }
   }
   prevSwitchStateR = switchStateR;
